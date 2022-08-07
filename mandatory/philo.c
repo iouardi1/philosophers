@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/05 19:42:22 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/07 14:35:24 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,14 +27,20 @@ void	init_struct(t_struct *my_struct)
 	my_struct->forks = malloc (sizeof(pthread_mutex_t) * my_struct->num_of_philos);
 }
 
-void 	*sm_function()
+void 	*sm_function(t_struct	 *my_struct)
 {
-	// int		a;
-	char *grr = "whatever";
-	// pthread_mutex_lock(lock);
+	// pthread_mutex_t	*forks;
+
+	// forks = malloc (sizeof(pthread_mutex_t) * my_struct->num_of_philos);
+	// pthread_mutex_init(my_struct->forks, NULL);
+	// printf("forks %d\n", my_struct->num_of_meals);
+	// pthread_mutex_lock();
 	// a = philo->num_of_meals;
 	// pthread_mutex_unlock(lock);
-	return (grr);
+	philo_eating();
+	philo_sleeping();
+	philo_thinking();
+	return ((void*)forks);
 }
 
 int	parse_args(t_struct *mystruct, char **argv)
@@ -52,9 +58,9 @@ int	parse_args(t_struct *mystruct, char **argv)
 
 int main(int argc, char **argv)
 {
-	pthread_t   		*t1;
-	pthread_mutex_t		*lock = NULL;
-	t_philo				philo;
+	// pthread_t   		*t1;
+	// pthread_mutex_t		*lock = NULL;
+	// t_philo				philo;
 	t_struct			*my_struct;
 	int	 				i;
 	int	 				err;
@@ -85,12 +91,22 @@ int main(int argc, char **argv)
 
 		while (i < my_struct->num_of_philos)
 		{
-			err = pthread_create(&my_struct->forks[i], NULL, &sm_function, NULL);
+			err = pthread_create(&my_struct->philo_diali[i], NULL, sm_function(my_struct), my_struct);
 			if (err != 0)
            		printf("can't create thread :[%s]\n", strerror(err));
         	i++;
 		}
 	}	
 	return (0);
+
+
+
+
+
+
+
+
+
+	
 }
 

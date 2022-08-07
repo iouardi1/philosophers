@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/05 19:35:46 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/07 13:29:15 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ typedef struct s_struct
 	int				time_sleep;
 	int 			num_of_meals;
 	pthread_mutex_t	*forks;
-	pthreaad_t		*philo_diali;
+	pthread_t		*philo_diali;
 } t_struct;
 
 
