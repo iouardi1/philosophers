@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/11 18:17:04 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/13 19:46:57 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -39,10 +39,11 @@ typedef struct s_philo
 	int 		r_fork;
 	t_struct	*mystruct;
 	int			eaten_meals;
+	int			time_since_last_meal;
 } t_philo;
-
 
 void	*test_thread();
 int     ft_atoi(const char *str);
+int		timing_function();
 
 #endif
