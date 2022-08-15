@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/13 19:55:01 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/15 17:12:34 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,13 +61,15 @@ void	philo_thinking(int i, int time)
 	printf("%d philo %d is thinking\n", time, i);
 }
 
-void 	*sm_function(t_philo *philo, int i, int current_time)
+void 	*sm_function(void *p)
 {
 	int		temp;
+	t_philo *philo;
 	int		temp_time;
 	int		eating_time;
 
 	temp = 0;
+	philo = (t_philo *)p;
 	while (1)
 	{
 		eating_time = timing_function();
@@ -83,12 +85,12 @@ void 	*sm_function(t_philo *philo, int i, int current_time)
 		philo_sleeping(philo, i, temp_time - current_time);
 		temp_time = timing_function();
 		philo_thinking(i, temp_time - current_time);
-		i++;
+		// i++;
 	}
 	return (philo);
 }
 
-int	timing_function()
+long	timing_function(long start_time)
 {
 	int				err;
 	struct timeval	current_time;
@@ -100,8 +102,7 @@ int	timing_function()
 		printf("gettimeofday function has failed\n");
 		return (1);
 	}
-	time_adjust = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
-	// printf("the current time since the EPOCH is : %ld,%d\n", current_time.tv_sec, current_time.tv_usec);
+	time_adjust = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000) - start_time;
 	return (time_adjust);
 }
 
@@ -158,7 +159,7 @@ int main(int argc, char **argv)
 		current_time = timing_function();
 		while (i < my_struct->num_of_philos)
 		{
-			err = pthread_create(&my_struct->philo_diali[i], NULL, sm_function(philo, i, current_time), &my_struct->philo_diali[i]);
+			err = pthread_create(&my_struct->philo_diali[i], NULL, sm_function, &my_struct->philo_diali[i]);
 			if (err != 0)
 			{
            		printf("can't create thread :[%s]\n", strerror(err));

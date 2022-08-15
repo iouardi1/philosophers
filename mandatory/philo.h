@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/13 19:46:57 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/15 17:12:24 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,8 @@ typedef struct s_struct
 
 typedef struct s_philo
 {
+	int			id;
+	long		start_time;
 	int 		l_fork;
 	int 		r_fork;
 	t_struct	*mystruct;
@@ -44,6 +46,6 @@ typedef struct s_philo
 
 void	*test_thread();
 int     ft_atoi(const char *str);
-int		timing_function();
+long	timing_function(long start_time);
 
 #endif
