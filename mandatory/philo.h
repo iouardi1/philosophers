@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/15 23:15:41 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/15 23:44:38 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,6 +27,7 @@ typedef struct s_struct
 {
 	int				num_of_philos;
 	long			start;
+	int				flag;
 	int				time_die;
 	int				time_eat;
 	int				time_sleep;

@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/15 23:31:51 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/15 23:54:42 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -36,15 +36,22 @@ void	init_struct(t_philo *philo, t_struct *mystruct)
 		mystruct->philo[i].eaten_meals = 0;
 		i++;
 	}
+	mystruct->flag = 0;
 }
 
 void	philo_eating(t_philo *philo)
 {
 	int		n;
 	long	temp_time;
+	struct	 timeval	current_time;
 
-	// philo->mystruct = malloc(sizeof(t_struct));
 	n = philo->mystruct->num_of_philos;
+	if (!philo->mystruct->flag)
+	{
+		gettimeofday(&current_time, NULL);
+		philo->mystruct->start = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
+		philo->mystruct->flag = 1;
+	}
 	pthread_mutex_lock(&philo->mystruct->forks[philo->id]);
 	temp_time = timing_function(philo->mystruct->start);
 	printf("%ld philo %d has taken a fork\n", temp_time, philo->id);
@@ -54,7 +61,7 @@ void	philo_eating(t_philo *philo)
 	temp_time = timing_function(philo->mystruct->start);
 	printf("%ld philo %d is eating\n", temp_time, philo->id);
 	philo->eaten_meals += 1;
-	usleep(philo->mystruct->time_eat * 1000);
+	usleep(philo->mystruct->time_eat);
 	pthread_mutex_unlock(&philo->mystruct->forks[philo->id]);
 	pthread_mutex_unlock(&philo->mystruct->forks[(philo->id + 1) % n]);
 }
@@ -64,7 +71,7 @@ void	philo_sleeping(t_philo *philo)
 	long	time;
 
 	time = timing_function(philo->mystruct->start);
-	usleep (philo->mystruct->time_sleep * 1000);
+	usleep (philo->mystruct->time_sleep);
 	printf("%ld philo %d is sleeping\n", time, philo->id);
 }
 
@@ -85,11 +92,6 @@ void 	*sm_function(void *p)
 	philo = (t_philo *)p;
 	while (1)
 	{
-		// if (philo->time_since_last_meal >= philo->mystruct->time_die)
-		// {
-		// 	printf("%ld philo %d died\n", eating_time, philo->id);
-		// 	break ;
-		// }
 		philo_eating(philo);
 		philo_sleeping(philo);
 		philo_thinking(philo);
@@ -132,7 +134,7 @@ int main(int argc, char **argv)
 	t_philo				*philo;
 	int	 				i;
 	int	 				err;
-	struct	 timeval	current_time;
+	// struct	 timeval	current_time;
 
 	i = 0;
 	mystruct = malloc (sizeof(t_struct));
@@ -162,8 +164,9 @@ int main(int argc, char **argv)
 			i++;
 		}
 		i = 0;
-		gettimeofday(&current_time, NULL);
-		mystruct->start = timing_function((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
+		// gettimeofday(&current_time, NULL);
+		// mystruct->start = (current_time.tv_sec * 1000) + (current_time.tv_usec / 1000);
+		// mystruct->start = timing_function((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
 		while (i < mystruct->num_of_philos)
 		{
 			err = pthread_create(&mystruct->philo[i].philo_diali, NULL, sm_function, &mystruct->philo[i]);
@@ -176,15 +179,11 @@ int main(int argc, char **argv)
         	i++;
 		}
 		i = 0;
-		while (1);
-		// err = gettimeofday(&current_time, NULL);
-		// if (!i)
-		// 	printf ("the current time since the EPOCH is : %ld,%d\n", current_time.tv_sec, current_time.tv_usec);
-		// while (i < mystruct->num_of_philos)
-		// {
-		// 	pthread_join(mystruct->philo_diali[i], NULL);
-		// 	i++;
-		// }
+		while (i < mystruct->num_of_philos)
+		{
+			pthread_join(mystruct->philo[i].philo_diali, NULL);
+			i++;
+		}
 	}
 	return (0);
 }
