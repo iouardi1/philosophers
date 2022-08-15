@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/15 17:12:34 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/15 23:31:51 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,71 +21,78 @@ void	*test_thread()
 	return (h);
 }
 
-void	init_struct(t_philo *philo, t_struct *my_struct)
+void	init_struct(t_philo *philo, t_struct *mystruct)
 {
-	my_struct->philo_diali = malloc (sizeof(pthread_t) * my_struct->num_of_philos);
-	my_struct->forks = malloc (sizeof(pthread_mutex_t) * my_struct->num_of_philos);
-	philo->mystruct = my_struct;
-	philo->eaten_meals = 0;
+	int			i;
+
+	i = 0;
+	(void)philo;
+	mystruct->philo = malloc(sizeof(t_philo) * mystruct->num_of_philos);
+	mystruct->forks = malloc (sizeof(pthread_mutex_t) * mystruct->num_of_philos);
+	while (i < mystruct->num_of_philos)
+	{
+		mystruct->philo[i].mystruct = mystruct;
+		mystruct->philo[i].id = i;
+		mystruct->philo[i].eaten_meals = 0;
+		i++;
+	}
 }
 
-void	philo_eating(t_philo *philo, int i, int current_time)
+void	philo_eating(t_philo *philo)
 {
 	int		n;
-	int		temp_time;
+	long	temp_time;
 
+	// philo->mystruct = malloc(sizeof(t_struct));
 	n = philo->mystruct->num_of_philos;
-	pthread_mutex_lock(&philo->mystruct->forks[i]);
-	// current_time = timing_function();
-	temp_time = timing_function();
-	printf("%d philo %d has taken a fork\n", temp_time - current_time, i);
-	pthread_mutex_lock(&philo->mystruct->forks[(i + 1) % n]);
-	temp_time = timing_function();
-	printf("%d philo %d has taken a fork\n", temp_time - current_time, i);
-	temp_time = timing_function();
-	printf("%d philo %d is eating\n", temp_time - current_time, i);
+	pthread_mutex_lock(&philo->mystruct->forks[philo->id]);
+	temp_time = timing_function(philo->mystruct->start);
+	printf("%ld philo %d has taken a fork\n", temp_time, philo->id);
+	pthread_mutex_lock(&philo->mystruct->forks[(philo->id + 1) % n]);
+	temp_time = timing_function(philo->mystruct->start);
+	printf("%ld philo %d has taken a fork\n", temp_time, philo->id);
+	temp_time = timing_function(philo->mystruct->start);
+	printf("%ld philo %d is eating\n", temp_time, philo->id);
 	philo->eaten_meals += 1;
 	usleep(philo->mystruct->time_eat * 1000);
-	pthread_mutex_unlock(&philo->mystruct->forks[i]);
-	pthread_mutex_unlock(&philo->mystruct->forks[(i + 1) % n]);
+	pthread_mutex_unlock(&philo->mystruct->forks[philo->id]);
+	pthread_mutex_unlock(&philo->mystruct->forks[(philo->id + 1) % n]);
 }
 
-void	philo_sleeping(t_philo *philo, int i, int time)
+void	philo_sleeping(t_philo *philo)
 {
-	usleep (philo->mystruct->time_sleep);
-	printf("%d philo %d is sleeping\n", time, i);
+	long	time;
+
+	time = timing_function(philo->mystruct->start);
+	usleep (philo->mystruct->time_sleep * 1000);
+	printf("%ld philo %d is sleeping\n", time, philo->id);
 }
 
-void	philo_thinking(int i, int time)
+void	philo_thinking(t_philo *philo)
 {
-	printf("%d philo %d is thinking\n", time, i);
+	long	time;
+
+	time = timing_function(philo->mystruct->start);
+	printf("%ld philo %d is thinking\n", time, philo->id);
 }
 
 void 	*sm_function(void *p)
 {
 	int		temp;
 	t_philo *philo;
-	int		temp_time;
-	int		eating_time;
 
 	temp = 0;
 	philo = (t_philo *)p;
 	while (1)
 	{
-		eating_time = timing_function();
-		if (philo->time_since_last_meal >= philo->mystruct->time_die)
-		{
-			printf("%d philo %d died\n", current_time, i);
-			break ;
-		}
-		philo_eating(philo, i, current_time);
-		eating_time = timing_function();
-		temp = eating_time;
-		temp_time = timing_function();
-		philo_sleeping(philo, i, temp_time - current_time);
-		temp_time = timing_function();
-		philo_thinking(i, temp_time - current_time);
-		// i++;
+		// if (philo->time_since_last_meal >= philo->mystruct->time_die)
+		// {
+		// 	printf("%ld philo %d died\n", eating_time, philo->id);
+		// 	break ;
+		// }
+		philo_eating(philo);
+		philo_sleeping(philo);
+		philo_thinking(philo);
 	}
 	return (philo);
 }
@@ -94,7 +101,7 @@ long	timing_function(long start_time)
 {
 	int				err;
 	struct timeval	current_time;
-	int				time_adjust;
+	long			time_adjust;
 
 	err = gettimeofday(&current_time, NULL);
 	if (err)
@@ -121,34 +128,33 @@ int	parse_args(t_struct *mystruct, char **argv)
 
 int main(int argc, char **argv)
 {
-	t_struct			*my_struct;
+	t_struct			*mystruct;
 	t_philo				*philo;
 	int	 				i;
 	int	 				err;
-	int					current_time;
+	struct	 timeval	current_time;
 
 	i = 0;
-	my_struct = malloc (sizeof(t_struct));
-	
+	mystruct = malloc (sizeof(t_struct));
 	if (argc < 5 || argc > 6)
 	{
 		printf("bad number of arguments\n");
-		free (my_struct);
+		free (mystruct);
 		return (1);
 	}
-	else if (parse_args(my_struct, argv))
+	else if (parse_args(mystruct, argv))
 	{
-		free(my_struct);
+		free(mystruct);
 		printf ("bad arguments\n");
 		return (1);
 	}
 	else
 	{
 		philo = malloc(sizeof(t_philo));
-		init_struct(philo, my_struct);
-		while (i < my_struct->num_of_philos)
+		init_struct(philo, mystruct);
+		while (i < mystruct->num_of_philos)
 		{
-			if (pthread_mutex_init(&my_struct->forks[i], NULL))
+			if (pthread_mutex_init(&mystruct->forks[i], NULL))
 			{
 				printf("mutex init failed\n");
 				return (2);
@@ -156,25 +162,27 @@ int main(int argc, char **argv)
 			i++;
 		}
 		i = 0;
-		current_time = timing_function();
-		while (i < my_struct->num_of_philos)
+		gettimeofday(&current_time, NULL);
+		mystruct->start = timing_function((current_time.tv_sec * 1000) + (current_time.tv_usec / 1000));
+		while (i < mystruct->num_of_philos)
 		{
-			err = pthread_create(&my_struct->philo_diali[i], NULL, sm_function, &my_struct->philo_diali[i]);
+			err = pthread_create(&mystruct->philo[i].philo_diali, NULL, sm_function, &mystruct->philo[i]);
 			if (err != 0)
 			{
            		printf("can't create thread :[%s]\n", strerror(err));
 				return (3);
 			}
-			usleep(10000);
+			usleep(100);
         	i++;
 		}
 		i = 0;
+		while (1);
 		// err = gettimeofday(&current_time, NULL);
 		// if (!i)
 		// 	printf ("the current time since the EPOCH is : %ld,%d\n", current_time.tv_sec, current_time.tv_usec);
-		// while (i < my_struct->num_of_philos)
+		// while (i < mystruct->num_of_philos)
 		// {
-		// 	pthread_join(my_struct->philo_diali[i], NULL);
+		// 	pthread_join(mystruct->philo_diali[i], NULL);
 		// 	i++;
 		// }
 	}
