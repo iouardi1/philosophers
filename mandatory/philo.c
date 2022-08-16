@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/17 00:26:28 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/17 00:44:07 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -181,22 +181,25 @@ int main(int argc, char **argv)
         	i++;
 		}
 		i = 0;
-		while (mystruct->philo)
+		while (1)
 		{
-			time = timing_function(mystruct->start);
-			if (mystruct->philo[i].time_since_last_meal + time >= mystruct->time_die)
+			while (i < mystruct->num_of_philos)
 			{
-				printf ("%ld philo %d has died\n", time, i);
-				return (0);
+				time = timing_function(mystruct->start);
+				if (time - mystruct->philo[i].time_since_last_meal >= mystruct->time_die)
+				{
+					printf ("%ld philo %d has died\n", time, i);
+					return (0);
+				}
+				i++;
 			}
-			i++;
 		}
 		i = 0;
-		while (i < mystruct->num_of_philos)
-		{
-			pthread_join(mystruct->philo[i].philo_diali, NULL);
-			i++;
-		}
+		// while (i < mystruct->num_of_philos)
+		// {
+		// 	pthread_join(mystruct->philo[i].philo_diali, NULL);
+		// 	i++;
+		// }
 	}
 	return (0);
 }
