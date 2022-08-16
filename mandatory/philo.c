@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/15 23:54:42 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/17 00:26:28 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,8 +60,9 @@ void	philo_eating(t_philo *philo)
 	printf("%ld philo %d has taken a fork\n", temp_time, philo->id);
 	temp_time = timing_function(philo->mystruct->start);
 	printf("%ld philo %d is eating\n", temp_time, philo->id);
+	philo->time_since_last_meal = temp_time;
 	philo->eaten_meals += 1;
-	usleep(philo->mystruct->time_eat);
+	usleep(philo->mystruct->time_eat * 1000);
 	pthread_mutex_unlock(&philo->mystruct->forks[philo->id]);
 	pthread_mutex_unlock(&philo->mystruct->forks[(philo->id + 1) % n]);
 }
@@ -71,7 +72,7 @@ void	philo_sleeping(t_philo *philo)
 	long	time;
 
 	time = timing_function(philo->mystruct->start);
-	usleep (philo->mystruct->time_sleep);
+	usleep (philo->mystruct->time_sleep * 1000);
 	printf("%ld philo %d is sleeping\n", time, philo->id);
 }
 
@@ -134,6 +135,7 @@ int main(int argc, char **argv)
 	t_philo				*philo;
 	int	 				i;
 	int	 				err;
+	long				time;
 	// struct	 timeval	current_time;
 
 	i = 0;
@@ -175,8 +177,19 @@ int main(int argc, char **argv)
            		printf("can't create thread :[%s]\n", strerror(err));
 				return (3);
 			}
-			usleep(100);
+			usleep(1000);
         	i++;
+		}
+		i = 0;
+		while (mystruct->philo)
+		{
+			time = timing_function(mystruct->start);
+			if (mystruct->philo[i].time_since_last_meal + time >= mystruct->time_die)
+			{
+				printf ("%ld philo %d has died\n", time, i);
+				return (0);
+			}
+			i++;
 		}
 		i = 0;
 		while (i < mystruct->num_of_philos)
