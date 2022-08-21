@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/15 23:44:38 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/21 01:13:12 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,6 +32,7 @@ typedef struct s_struct
 	int				time_eat;
 	int				time_sleep;
 	int 			num_of_meals;
+	int 			philo_chb3;
 	pthread_mutex_t	*forks;
 	t_philo		 	*philo;
 } t_struct;
@@ -39,13 +40,13 @@ typedef struct s_struct
 
 typedef struct s_philo
 {
-	int			id;
+	int				id;
 	// int 		l_fork;
 	// int 		r_fork;
-	t_struct	*mystruct;
-	int			eaten_meals;
-	int			time_since_last_meal;
-	pthread_t	philo_diali;
+	t_struct		*mystruct;
+	int				eaten_meals;
+	long			time_since_last_meal;
+	pthread_t		philo_diali;
 } t_philo;
 
 void	*test_thread();
