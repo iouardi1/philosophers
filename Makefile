@@ -6,7 +6,7 @@
 #    By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2022/02/14 16:41:34 by iouardi           #+#    #+#              #
-#    Updated: 2022/08/17 00:27:40 by iouardi          ###   ########.fr        #
+#    Updated: 2022/08/23 10:05:48 by iouardi          ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ OBJ_FILES_BONUS=	$(SRC_FILES_BONUS:.c=.o)
 all: $(NAME)
 
 $(NAME): $(OBJ_FILES)
-	$(CC) $(OBJ_FILES) -o $(NAME) -g -fsanitize=address
+	$(CC) $(OBJ_FILES) -o $(NAME) -fsanitize=thread -g -O1 -pthread
 %.o: %.c
 	$(CC) $(FLAGS) -c $< -o $@
 

@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/21 01:13:12 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/23 10:44:47 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -41,8 +41,8 @@ typedef struct s_struct
 typedef struct s_philo
 {
 	int				id;
-	// int 		l_fork;
-	// int 		r_fork;
+	// int 			l_fork;
+	// int 			r_fork;
 	t_struct		*mystruct;
 	int				eaten_meals;
 	long			time_since_last_meal;
