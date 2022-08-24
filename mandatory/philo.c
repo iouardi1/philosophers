@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/23 13:57:31 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/24 11:25:10 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,9 +87,9 @@ void	philo_sleeping(t_philo *philo)
 
 	time = timing_function(philo->mystruct->start);
 	pthread_mutex_lock(&philo->mystruct->msg);
-	sleep_accurate(philo->mystruct, philo->mystruct->time_sleep);
 	printf("%ld philo %d is sleeping\n", time, philo->id + 1);
 	pthread_mutex_unlock(&philo->mystruct->msg);
+	sleep_accurate(philo->mystruct, philo->mystruct->time_sleep);
 }
 
 void	philo_thinking(t_philo *philo)
@@ -134,14 +134,51 @@ long	timing_function(long start_time)
 	return (time_adjust);
 }
 
+int	is_digit(char c)
+{
+	if (c >= '0' && c <= '9')
+		return (1);
+	return (0);
+}
+
 int	parse_args(t_struct *mystruct, char **argv)
 {
+	int		i;
+	int		j;
+
+	i = 1;
+	while (argv[i])
+	{
+		j = 0;
+		while (argv[i][j])
+		{
+			if (!is_digit(argv[i][j]))
+			{
+				printf("invalid argument %s\n", argv[i]);
+				return (2);
+			}
+			j++;
+		}
+		i++;
+	}
+	i = 1;
+	while (argv[i])
+	{
+		if (ft_atoi(argv[i]) == -1)
+		{
+			printf("invalid argument %s\n", argv[i]);
+			return (2);
+		}
+		i++;
+	}
 	mystruct->num_of_philos = ft_atoi(argv[1]);
 	mystruct->time_die = ft_atoi(argv[2]);
 	mystruct->time_eat = ft_atoi(argv[3]);
 	mystruct->time_sleep = ft_atoi(argv[4]);
 	if (argv[5])
 		mystruct->num_of_meals = ft_atoi(argv[5]);
+	else
+		mystruct->num_of_meals = -1;
 	if (mystruct->num_of_philos > 200 || mystruct->num_of_philos <= 0)
 		return (1);
 	return (0);
@@ -222,14 +259,14 @@ int main(int argc, char **argv)
 					printf ("%ld philo %d is dead\n", time, i + 1);
 					return (0);
 				}
-				if (mystruct->philo[i].eaten_meals >= mystruct->num_of_meals)
+				if (mystruct->num_of_meals != -1 && mystruct->philo[i].eaten_meals >= mystruct->num_of_meals)
 				{
-					usleep(50);
+					// usleep(50);
 					mystruct->philo_chb3 += 1;
 					if (mystruct->philo_chb3 >= mystruct->num_of_philos)
 					{
 						pthread_mutex_lock(&mystruct->msg);
-						printf ("philo chb3\n");
+						printf ("%ld philos chb3o\n", time);
 						pthread_mutex_unlock(&mystruct->msg);
 						return (0);
 					}
