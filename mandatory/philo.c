@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/24 11:25:10 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/25 20:06:28 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,9 +46,11 @@ void	init_struct(t_philo *philo, t_struct *mystruct)
 		mystruct->philo[i].id = i;
 		mystruct->philo[i].eaten_meals = 0;
 		mystruct->philo[i].time_since_last_meal = 0;
-		mystruct->philo_chb3 = 0;
 		i++;
 	}
+	mystruct->philo_chb3 = 0;
+	mystruct->check_philos_chb3o = 0;
+	mystruct->death_flag = 0;
 	mystruct->flag = 0;
 }
 
@@ -66,19 +68,27 @@ void	philo_eating(t_philo *philo)
 		philo->mystruct->flag = 1;
 	}
 	pthread_mutex_lock(&philo->mystruct->forks[philo->id]);
+	temp_time = timing_function(philo->mystruct->start);
+	pthread_mutex_lock(&philo->mystruct->msg);
+	printf("%ld philo %d has taken a fork\n", temp_time, philo->id + 1);
+	pthread_mutex_unlock(&philo->mystruct->msg);
+	pthread_mutex_unlock(&philo->mystruct->forks[philo->id]);
 	pthread_mutex_lock(&philo->mystruct->forks[(philo->id + 1) % n]);
 	temp_time = timing_function(philo->mystruct->start);
+	pthread_mutex_lock(&philo->mystruct->msg);
 	printf("%ld philo %d has taken a fork\n", temp_time, philo->id + 1);
+	pthread_mutex_unlock(&philo->mystruct->msg);
+	pthread_mutex_unlock(&philo->mystruct->forks[(philo->id + 1) % n]);
 	temp_time = timing_function(philo->mystruct->start);
-	printf("%ld philo %d has taken a fork\n", temp_time, philo->id + 1);
-	temp_time = timing_function(philo->mystruct->start);
+	pthread_mutex_lock(&philo->mystruct->msg);
 	printf("%ld philo %d is eating\n", temp_time, philo->id + 1);
+	pthread_mutex_unlock(&philo->mystruct->msg);
 	sleep_accurate(philo->mystruct, philo->mystruct->time_eat);
 	temp_time = timing_function(philo->mystruct->start);
 	philo->mystruct->philo[philo->id].time_since_last_meal = temp_time;
 	philo->eaten_meals += 1;
-	pthread_mutex_unlock(&philo->mystruct->forks[philo->id]);
-	pthread_mutex_unlock(&philo->mystruct->forks[(philo->id + 1) % n]);
+	if (philo->mystruct->num_of_meals != -1 && philo->eaten_meals >= philo->mystruct->num_of_meals)
+		philo->mystruct->philo_chb3 += 1;
 }
 
 void	philo_sleeping(t_philo *philo)
@@ -86,10 +96,10 @@ void	philo_sleeping(t_philo *philo)
 	long	time;
 
 	time = timing_function(philo->mystruct->start);
+	sleep_accurate(philo->mystruct, philo->mystruct->time_sleep);
 	pthread_mutex_lock(&philo->mystruct->msg);
 	printf("%ld philo %d is sleeping\n", time, philo->id + 1);
 	pthread_mutex_unlock(&philo->mystruct->msg);
-	sleep_accurate(philo->mystruct, philo->mystruct->time_sleep);
 }
 
 void	philo_thinking(t_philo *philo)
@@ -106,10 +116,14 @@ void 	*sm_function(void *p)
 {
 	int		temp;
 	t_philo *philo;
+	int		 philos_chb3o;
+	int		 death_flag;
 
 	temp = 0;
 	philo = (t_philo *)p;
-	while (1)
+	philos_chb3o = philo->mystruct->check_philos_chb3o;
+	death_flag = philo->mystruct->death_flag;
+	while (!death_flag && !philos_chb3o)
 	{
 		philo_eating(philo);
 		philo_sleeping(philo);
@@ -253,8 +267,10 @@ int main(int argc, char **argv)
 			while (i < mystruct->num_of_philos)
 			{
 				time = timing_function(mystruct->start);
+				// pthread_mutex_lock(&mystruct->msg);
 				if ((time - mystruct->philo[i].time_since_last_meal >= mystruct->time_die))
 				{
+					mystruct->death_flag = 1;
 					pthread_mutex_lock(&mystruct->msg);
 					printf ("%ld philo %d is dead\n", time, i + 1);
 					return (0);
@@ -262,9 +278,10 @@ int main(int argc, char **argv)
 				if (mystruct->num_of_meals != -1 && mystruct->philo[i].eaten_meals >= mystruct->num_of_meals)
 				{
 					// usleep(50);
-					mystruct->philo_chb3 += 1;
+					// mystruct->philo_chb3 += 1;
 					if (mystruct->philo_chb3 >= mystruct->num_of_philos)
 					{
+						mystruct->check_philos_chb3o = 1;
 						pthread_mutex_lock(&mystruct->msg);
 						printf ("%ld philos chb3o\n", time);
 						pthread_mutex_unlock(&mystruct->msg);
@@ -272,6 +289,7 @@ int main(int argc, char **argv)
 					}
 				}
 				i++;
+				// pthread_mutex_unlock(&mystruct->msg);
 			}
 		}
 		i = 0;

@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/23 12:06:28 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/25 18:09:59 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -33,6 +33,8 @@ typedef struct s_struct
 	int				time_sleep;
 	int 			num_of_meals;
 	int 			philo_chb3;
+	int 			check_philos_chb3o;
+	int				death_flag;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	msg;
 	t_philo		 	*philo;
