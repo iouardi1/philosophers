@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/26 01:19:57 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/26 01:34:14 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -221,8 +221,8 @@ void	printing_function(char *msg, t_philo *philo, long time, int i)
 		pthread_mutex_lock(&philo->mystruct->death);
 		philo->mystruct->death_flag = 1;
 		pthread_mutex_unlock(&philo->mystruct->death);
-		pthread_mutex_lock(&philo->mystruct->msg);
-		printf ("%ld philo %d %s\n", time, i + 1, "is dead");
+		// pthread_mutex_lock(&philo->mystruct->msg);
+		// printf ("%ld philo %d %s\n", time, i + 1, "is dead");
 		// pthread_mutex_unlock(&philo->mystruct->msg);
 	}
 		
@@ -282,9 +282,9 @@ int main(int argc, char **argv)
            		printf("can't create thread :[%s]\n", strerror(err));
 				return (3);
 			}
-			usleep(50);
         	i += 2;
 		}
+		usleep(100);
 		i = 1;
 		while (i < mystruct->num_of_philos)
 		{
@@ -295,7 +295,7 @@ int main(int argc, char **argv)
            		printf("can't create thread :[%s]\n", strerror(err)); // remove this if it is not allowed
 				return (3);
 			}
-			usleep(50);
+			// usleep(50);
         	i += 2;
 		}
 		while (1)
@@ -311,8 +311,8 @@ int main(int argc, char **argv)
 					mystruct->death_flag = 1;
 					pthread_mutex_unlock(&mystruct->death);
 					// printing_function("DEAD", mystruct->philo, time, i);
-					// pthread_mutex_lock(&mystruct->msg);
-					// printf ("%ld philo %d is dead\n", time, i + 1);
+					pthread_mutex_lock(&mystruct->msg);
+					printf ("%ld philo %d is dead\n", time, i + 1);
 					return (0);
 				}
 				if (mystruct->num_of_meals != -1 && mystruct->philo[i].eaten_meals >= mystruct->num_of_meals)
