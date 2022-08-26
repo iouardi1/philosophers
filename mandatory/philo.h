@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/25 18:09:59 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/26 01:15:31 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,7 @@
 #define PHILO_H
 
 #include <stdio.h>
+#include <string.h>
 #include <unistd.h>
 #include <stdlib.h>
 #include <pthread.h>
@@ -37,6 +38,8 @@ typedef struct s_struct
 	int				death_flag;
 	pthread_mutex_t	*forks;
 	pthread_mutex_t	msg;
+	pthread_mutex_t	death;
+	pthread_mutex_t	eaten;
 	t_philo		 	*philo;
 } t_struct;
 
@@ -55,5 +58,11 @@ typedef struct s_philo
 void	*test_thread();
 int     ft_atoi(const char *str);
 long	timing_function(long start_time);
+void	printing_function(char *msg, t_philo *philo, long time, int i);
+int      strcmp(const char *__s1, const char *__s2);
 
 #endif
+
+
+//2792 philo 2 is eating
+//2991 philo 2 is dead
