@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/26 01:34:14 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/27 19:59:49 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,25 +75,16 @@ void	philo_eating(t_philo *philo)
 	printing_function("has taking a fork", philo, temp_time, philo->id);
 	temp_time = timing_function(philo->mystruct->start);
 	printing_function("is eating", philo, temp_time, philo->id);
-	// pthread_mutex_lock(&philo->mystruct->msg);
-	// printf("%ld philo %d has taken a fork\n", temp_time, philo->id + 1);
-	// pthread_mutex_unlock(&philo->mystruct->msg);
-	// pthread_mutex_lock(&philo->mystruct->msg);
-	// printf("%ld philo %d has taken a fork\n", temp_time, philo->id + 1);
-	// pthread_mutex_unlock(&philo->mystruct->msg);
-	// pthread_mutex_lock(&philo->mystruct->msg);
-	// printf("%ld philo %d is eating\n", temp_time, philo->id + 1);
-	// pthread_mutex_unlock(&philo->mystruct->msg);
-	sleep_accurate(philo->mystruct, philo->mystruct->time_eat);
 	temp_time = timing_function(philo->mystruct->start);
 	philo->mystruct->philo[philo->id].time_since_last_meal = temp_time;
+	sleep_accurate(philo->mystruct, philo->mystruct->time_eat);
 	pthread_mutex_lock(&philo->mystruct->eaten);
 	philo->eaten_meals += 1;
 	pthread_mutex_unlock(&philo->mystruct->eaten);
 	if (philo->mystruct->num_of_meals != -1 && philo->eaten_meals >= philo->mystruct->num_of_meals)
 		philo->mystruct->philo_chb3 += 1;
-	pthread_mutex_unlock(&philo->mystruct->forks[philo->id]);
 	pthread_mutex_unlock(&philo->mystruct->forks[(philo->id + 1) % n]);
+	pthread_mutex_unlock(&philo->mystruct->forks[philo->id]);
 }
 
 void	philo_sleeping(t_philo *philo)
@@ -101,9 +92,6 @@ void	philo_sleeping(t_philo *philo)
 	long	time;
 
 	time = timing_function(philo->mystruct->start);
-	// pthread_mutex_lock(&philo->mystruct->msg);
-	// printf("%ld philo %d is sleeping\n", time, philo->id + 1);
-	// pthread_mutex_unlock(&philo->mystruct->msg);
 	printing_function("is sleeping", philo, time, philo->id);
 	sleep_accurate(philo->mystruct, philo->mystruct->time_sleep);
 }
@@ -113,9 +101,6 @@ void	philo_thinking(t_philo *philo)
 	long	time;
 
 	time = timing_function(philo->mystruct->start);
-	// pthread_mutex_lock(&philo->mystruct->msg);
-	// printf("%ld philo %d is thinking\n", time, philo->id + 1);
-	// pthread_mutex_unlock(&philo->mystruct->msg);
 	printing_function("is thinking", philo, time, philo->id);
 }
 
