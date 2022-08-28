@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/27 19:59:49 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/28 04:37:33 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,7 +29,7 @@ void	sleep_accurate(t_struct *mystruct, long n)
 	i = 0;
 	current_time = timing_function(mystruct->start);
 	while (timing_function(mystruct->start) - current_time < n)
-		usleep(100);
+		usleep(500);
 }
 
 void	init_struct(t_philo *philo, t_struct *mystruct)
@@ -77,14 +77,14 @@ void	philo_eating(t_philo *philo)
 	printing_function("is eating", philo, temp_time, philo->id);
 	temp_time = timing_function(philo->mystruct->start);
 	philo->mystruct->philo[philo->id].time_since_last_meal = temp_time;
-	sleep_accurate(philo->mystruct, philo->mystruct->time_eat);
 	pthread_mutex_lock(&philo->mystruct->eaten);
 	philo->eaten_meals += 1;
 	pthread_mutex_unlock(&philo->mystruct->eaten);
+	sleep_accurate(philo->mystruct, philo->mystruct->time_eat);
 	if (philo->mystruct->num_of_meals != -1 && philo->eaten_meals >= philo->mystruct->num_of_meals)
 		philo->mystruct->philo_chb3 += 1;
-	pthread_mutex_unlock(&philo->mystruct->forks[(philo->id + 1) % n]);
 	pthread_mutex_unlock(&philo->mystruct->forks[philo->id]);
+	pthread_mutex_unlock(&philo->mystruct->forks[(philo->id + 1) % n]);
 }
 
 void	philo_sleeping(t_philo *philo)
@@ -117,6 +117,8 @@ void 	*sm_function(void *p)
 		death_flag = philo->mystruct->death_flag;
 	while (!death_flag && !philos_chb3o)
 	{
+		if (philo->mystruct->num_of_meals != -1 && philo->eaten_meals == philo->mystruct->num_of_meals)
+			continue;
 		philos_chb3o = philo->mystruct->check_philos_chb3o;
 		death_flag = philo->mystruct->death_flag;
 		philo_eating(philo);
@@ -206,9 +208,6 @@ void	printing_function(char *msg, t_philo *philo, long time, int i)
 		pthread_mutex_lock(&philo->mystruct->death);
 		philo->mystruct->death_flag = 1;
 		pthread_mutex_unlock(&philo->mystruct->death);
-		// pthread_mutex_lock(&philo->mystruct->msg);
-		// printf ("%ld philo %d %s\n", time, i + 1, "is dead");
-		// pthread_mutex_unlock(&philo->mystruct->msg);
 	}
 		
 }
@@ -217,7 +216,7 @@ int main(int argc, char **argv)
 {
 	t_struct			*mystruct;
 	int	 				i;
-	int	 				err;
+	int	 				j;
 	long				time;
 
 	i = 0;
@@ -261,26 +260,16 @@ int main(int argc, char **argv)
 		while (i < mystruct->num_of_philos)
 		{
 			mystruct->philo[i].time_since_last_meal = 0;
-			err = pthread_create(&mystruct->philo[i].philo_diali, NULL, sm_function, &mystruct->philo[i]);
-			if (err != 0)
-			{
-           		printf("can't create thread :[%s]\n", strerror(err));
-				return (3);
-			}
+			pthread_create(&mystruct->philo[i].philo_diali, NULL, sm_function, &mystruct->philo[i]);
+			usleep(50);
         	i += 2;
 		}
-		usleep(100);
 		i = 1;
 		while (i < mystruct->num_of_philos)
 		{
 			mystruct->philo[i].time_since_last_meal = 0;
-			err = pthread_create(&mystruct->philo[i].philo_diali, NULL, sm_function, &mystruct->philo[i]);
-			if (err != 0)
-			{
-           		printf("can't create thread :[%s]\n", strerror(err)); // remove this if it is not allowed
-				return (3);
-			}
-			// usleep(50);
+			pthread_create(&mystruct->philo[i].philo_diali, NULL, sm_function, &mystruct->philo[i]);
+			usleep(50);
         	i += 2;
 		}
 		while (1)
@@ -295,27 +284,33 @@ int main(int argc, char **argv)
 					pthread_mutex_lock(&mystruct->death);
 					mystruct->death_flag = 1;
 					pthread_mutex_unlock(&mystruct->death);
-					// printing_function("DEAD", mystruct->philo, time, i);
 					pthread_mutex_lock(&mystruct->msg);
 					printf ("%ld philo %d is dead\n", time, i + 1);
+					j = 0;
+					while (j < mystruct->num_of_philos)
+					{
+						pthread_join(mystruct->philo[j].philo_diali, NULL);
+						j++;
+					}
 					return (0);
 				}
-				if (mystruct->num_of_meals != -1 && mystruct->philo[i].eaten_meals >= mystruct->num_of_meals)
+				if (mystruct->num_of_meals != -1 && mystruct->philo[i].eaten_meals == mystruct->num_of_meals)
 				{
-					// usleep(50);
-					// mystruct->philo_chb3 += 1;
-					if (mystruct->philo_chb3 >= mystruct->num_of_philos)
+					if (mystruct->philo_chb3 == mystruct->num_of_philos)
 					{
+						pthread_mutex_lock(&mystruct->chb3);
 						mystruct->check_philos_chb3o = 1;
-						// printing_function("chb3", mystruct, time, i);
-						// pthread_mutex_lock(&mystruct->msg);
-						// printf ("%ld philos chb3o\n", time);
-						// pthread_mutex_unlock(&mystruct->msg);
+						pthread_mutex_lock(&mystruct->chb3);
+						j = 0;
+						while (j < mystruct->num_of_philos)
+						{
+							pthread_join(mystruct->philo[j].philo_diali, NULL);
+							j++;
+						}
 						return (0);
 					}
 				}
 				i++;
-				// pthread_mutex_unlock(&mystruct->msg);
 			}
 		}
 		i = 0;

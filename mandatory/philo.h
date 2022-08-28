@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/26 01:15:31 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/28 04:14:35 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,7 @@ typedef struct s_struct
 	pthread_mutex_t	msg;
 	pthread_mutex_t	death;
 	pthread_mutex_t	eaten;
+	pthread_mutex_t	chb3;
 	t_philo		 	*philo;
 } t_struct;
 
