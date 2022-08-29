@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:14:09 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/29 17:18:20 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/29 17:41:31 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,7 +63,11 @@ int	parse_args(t_struct *mystruct, char **argv)
 	mystruct->time_eat = ft_atoi(argv[3]);
 	mystruct->time_sleep = ft_atoi(argv[4]);
 	if (argv[5])
+    {
 		mystruct->num_of_meals = ft_atoi(argv[5]);
+        if (mystruct->num_of_meals == 0)
+            return (3);
+    }
 	else
 		mystruct->num_of_meals = -1;
 	if (mystruct->num_of_philos > 200 || mystruct->num_of_philos <= 0)
@@ -79,6 +83,8 @@ int	parsing(t_struct *mystruct, char **argv, int argc)
 		free (mystruct);
 		return (1);
 	}
+    else if (parse_args(mystruct, argv) == 3)
+        return (3);
 	else if (parse_args(mystruct, argv))
 	{
 		free(mystruct);
