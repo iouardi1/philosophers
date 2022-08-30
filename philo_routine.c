@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:21:16 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/29 17:21:43 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/29 23:04:38 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -68,4 +68,31 @@ void	philo_thinking(t_philo *philo)
 
 	time = timing_function(philo->mystruct->start);
 	printing_function("is thinking", philo, time, philo->id);
+}
+
+void	*sm_function(void *p)
+{
+	int		temp;
+	t_philo	*philo;
+	int		philos_chb3o;
+	int		death_flag;
+
+	temp = 0;
+	philo = (t_philo *)p;
+	philos_chb3o = philo->mystruct->check_philos_chb3o;
+	death_flag = philo->mystruct->death_flag;
+	while (!death_flag && !philos_chb3o)
+	{
+		if (philo->mystruct->death_flag)
+			break ;
+		if (philo->mystruct->num_of_meals != -1 && \
+			philo->eaten_meals == philo->mystruct->num_of_meals)
+			continue ;
+		philos_chb3o = philo->mystruct->check_philos_chb3o;
+		death_flag = philo->mystruct->death_flag;
+		philo_eating(philo);
+		philo_sleeping(philo);
+		philo_thinking(philo);
+	}
+	return (philo);
 }

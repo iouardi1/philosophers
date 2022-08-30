@@ -6,18 +6,17 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:15:46 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/29 17:17:37 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/29 22:46:04 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	init_struct(t_philo *philo, t_struct *mystruct)
+void	init_struct(t_struct *mystruct)
 {
 	int			i;
 
 	i = 0;
-	(void)philo;
 	mystruct->philo = malloc(sizeof(t_philo) * mystruct->num_of_philos);
 	mystruct->forks = malloc (sizeof(pthread_mutex_t) * \
 		mystruct->num_of_philos);
@@ -35,29 +34,14 @@ void	init_struct(t_philo *philo, t_struct *mystruct)
 	mystruct->flag = 0;
 }
 
-void	*sm_function(void *p)
+int	init_mutexes_supp(pthread_mutex_t *mutex)
 {
-	int		temp;
-	t_philo	*philo;
-	int		philos_chb3o;
-	int		death_flag;
-
-	temp = 0;
-	philo = (t_philo *)p;
-		philos_chb3o = philo->mystruct->check_philos_chb3o;
-		death_flag = philo->mystruct->death_flag;
-	while (!death_flag && !philos_chb3o)
+	if (pthread_mutex_init(mutex, NULL))
 	{
-		if (philo->mystruct->num_of_meals != -1 && \
-			philo->eaten_meals == philo->mystruct->num_of_meals)
-			continue ;
-		philos_chb3o = philo->mystruct->check_philos_chb3o;
-		death_flag = philo->mystruct->death_flag;
-		philo_eating(philo);
-		philo_sleeping(philo);
-		philo_thinking(philo);
+		printf("mutex init failed\n");
+		return (2);
 	}
-	return (philo);
+	return (0);
 }
 
 int	init_mutexes(t_struct *mystruct)
@@ -74,16 +58,11 @@ int	init_mutexes(t_struct *mystruct)
 		}
 		i++;
 	}
-	if (pthread_mutex_init(&mystruct->msg, NULL))
-	{
-		printf("mutex init failed\n");
+	if (init_mutexes_supp(&mystruct->msg) || \
+		init_mutexes_supp(&mystruct->death) \
+		|| init_mutexes_supp(&mystruct->eaten) \
+		|| init_mutexes_supp(&mystruct->chb3))
 		return (2);
-	}
-	if (pthread_mutex_init(&mystruct->death, NULL))
-	{
-		printf("mutex init failed\n");
-		return (2);
-	}
 	return (0);
 }
 

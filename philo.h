@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:17 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/29 17:29:38 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/29 22:45:15 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ void	printing_function(char *msg, t_philo *philo, long time, int i);
 int		strcmp(const char *__s1, const char *__s2);
 int		parse_args(t_struct *mystruct, char **argv);
 int		parsing(t_struct *mystruct, char **argv, int argc);
-void	init_struct(t_philo *philo, t_struct *mystruct);
+void	init_struct(t_struct *mystruct);
 int		init_mutexes(t_struct *mystruct);
 int		create_threads(t_struct *mystruct);
 int		threads_checker(t_struct *mystruct);
@@ -68,5 +68,6 @@ void	philo_eating(t_philo *philo);
 void	philo_sleeping(t_philo *philo);
 void	philo_thinking(t_philo *philo);
 void	sleep_accurate(t_struct *mystruct, long n);
+void	*sm_function(void *p);
 
 #endif

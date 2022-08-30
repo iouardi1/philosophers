@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:19:26 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/29 17:19:52 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/29 23:07:13 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ int	philos_chb3o_check(int i, t_struct *mystruct)
 		{
 			pthread_mutex_lock(&mystruct->chb3);
 			mystruct->check_philos_chb3o = 1;
-			pthread_mutex_lock(&mystruct->chb3);
+			pthread_mutex_unlock(&mystruct->chb3);
 			j = 0;
 			while (j < mystruct->num_of_philos)
 			{

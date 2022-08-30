@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/05/17 20:48:00 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/29 17:22:43 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/29 22:42:49 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,8 +67,7 @@ int	main(int argc, char **argv)
 		return (1);
 	else
 	{
-		mystruct->philo = malloc(sizeof(t_philo));
-		init_struct(mystruct->philo, mystruct);
+		init_struct(mystruct);
 		if (init_mutexes(mystruct))
 			return (2);
 		if (create_threads(mystruct))

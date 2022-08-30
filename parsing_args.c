@@ -6,7 +6,7 @@
 /*   By: iouardi <iouardi@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2022/08/29 17:14:09 by iouardi           #+#    #+#             */
-/*   Updated: 2022/08/29 17:41:31 by iouardi          ###   ########.fr       */
+/*   Updated: 2022/08/29 19:23:20 by iouardi          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,6 +42,23 @@ int	check_invalid_args(char **argv)
 	return (0);
 }
 
+int	init_args(t_struct *mystruct, char **argv)
+{
+	mystruct->num_of_philos = ft_atoi(argv[1]);
+	mystruct->time_die = ft_atoi(argv[2]);
+	mystruct->time_eat = ft_atoi(argv[3]);
+	mystruct->time_sleep = ft_atoi(argv[4]);
+	if (argv[5])
+	{
+		mystruct->num_of_meals = ft_atoi(argv[5]);
+		if (mystruct->num_of_meals == 0)
+			return (3);
+	}
+	else
+		mystruct->num_of_meals = -1;
+	return (0);
+}
+
 int	parse_args(t_struct *mystruct, char **argv)
 {
 	int		i;
@@ -58,18 +75,8 @@ int	parse_args(t_struct *mystruct, char **argv)
 		}
 		i++;
 	}
-	mystruct->num_of_philos = ft_atoi(argv[1]);
-	mystruct->time_die = ft_atoi(argv[2]);
-	mystruct->time_eat = ft_atoi(argv[3]);
-	mystruct->time_sleep = ft_atoi(argv[4]);
-	if (argv[5])
-    {
-		mystruct->num_of_meals = ft_atoi(argv[5]);
-        if (mystruct->num_of_meals == 0)
-            return (3);
-    }
-	else
-		mystruct->num_of_meals = -1;
+	if (init_args(mystruct, argv))
+		return (3);
 	if (mystruct->num_of_philos > 200 || mystruct->num_of_philos <= 0)
 		return (1);
 	return (0);
@@ -77,15 +84,18 @@ int	parse_args(t_struct *mystruct, char **argv)
 
 int	parsing(t_struct *mystruct, char **argv, int argc)
 {
+	int		i;
+
 	if (argc < 5 || argc > 6)
 	{
 		printf("bad number of arguments\n");
 		free (mystruct);
 		return (1);
 	}
-    else if (parse_args(mystruct, argv) == 3)
-        return (3);
-	else if (parse_args(mystruct, argv))
+	i = parse_args(mystruct, argv);
+	if (i == 3)
+		return (3);
+	else if (i)
 	{
 		free(mystruct);
 		printf ("bad arguments\n");
